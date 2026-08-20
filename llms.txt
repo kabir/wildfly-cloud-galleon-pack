@@ -1,0 +1,48 @@
+# WildFly Cloud Galleon Pack
+
+> The WildFly Cloud Galleon Pack (`org.wildfly.cloud:wildfly-cloud-galleon-pack`) is a Galleon feature pack that provisions cloud-optimized configuration for WildFly application servers. It adjusts standard WildFly Galleon layers for cloud environments (OpenShift, Kubernetes) by configuring JGroups for TCP-based clustering, routing logs to console, enabling health probes, tuning datasources, and providing startup scripts that configure the server via environment variables. A companion preview variant (`wildfly-preview-cloud-galleon-pack`) targets Jakarta EE 11+ servers.
+
+## Documentation
+
+- [README.md](README.md): Project overview and usage summary
+- [doc/index.md](doc/index.md): Detailed guide to provisioning a WildFly server for the cloud, including Maven plugin configuration, image building, and bootable JAR packaging
+- [doc/layers.md](doc/layers.md): Galleon layers defined and adjusted by the cloud feature pack (cloud-default-config, base-server, ejb-dist-cache, jpa, logging, transactions, undertow, web-clustering, etc.)
+- [doc/launch.md](doc/launch.md): Server startup scripts and environment variables for configuring datasources, JGroups, Elytron, MicroProfile Config, logging, messaging, and more at launch time
+- [doc/datasources.md](doc/datasources.md): Internal and external datasource configuration via environment variables, driver installation, and S2I hooks
+- [doc/bootable.md](doc/bootable.md): Bootable JAR-specific cloud configuration (node naming, JGroups HA auto-configuration)
+
+## Feature Pack Build Definitions
+
+- [wildfly-cloud-galleon-pack/wildfly-feature-pack-build.xml](wildfly-cloud-galleon-pack/wildfly-feature-pack-build.xml): Feature pack build descriptor for the standard cloud pack, depends on wildfly-galleon-pack and wildfly-ee-galleon-pack
+- [wildfly-preview-cloud-galleon-pack/wildfly-feature-pack-build.xml](wildfly-preview-cloud-galleon-pack/wildfly-feature-pack-build.xml): Feature pack build descriptor for the preview cloud pack, depends on wildfly-preview-feature-pack
+
+## Galleon Layer Definitions
+
+- [common/src/main/resources/layers/standalone/cloud-default-config/layer-spec.xml](common/src/main/resources/layers/standalone/cloud-default-config/layer-spec.xml): The cloud-default-config layer providing a full default cloud server configuration with all JBoss Modules
+- [common/src/main/resources/layers/standalone/mail/layer-spec.xml](common/src/main/resources/layers/standalone/mail/layer-spec.xml): Cloud-adjusted mail layer with SMTP host configurable via OPENSHIFT_SMTP_HOST environment variable
+
+## Launch Scripts
+
+- [common/src/main/resources/packages/org.wildfly.cloud.launch.scripts/content/bin/launch/launch-config.sh](common/src/main/resources/packages/org.wildfly.cloud.launch.scripts/content/bin/launch/launch-config.sh): Main launch configuration script provisioned into the server
+
+## Bootable JAR Cloud Configurator
+
+- [wildfly-bootable-cloud-configurator/src/main/java/org/wildfly/cloud/bootable/runtime/CloudConfigurator.java](wildfly-bootable-cloud-configurator/src/main/java/org/wildfly/cloud/bootable/runtime/CloudConfigurator.java): Runtime extension that applies cloud-specific configuration at bootable JAR boot time (node naming, JGroups protocol setup)
+- [wildfly-bootable-cloud-configurator/src/main/java/org/wildfly/cloud/bootable/runtime/JGroupsUtil.java](wildfly-bootable-cloud-configurator/src/main/java/org/wildfly/cloud/bootable/runtime/JGroupsUtil.java): JGroups utility for adding KUBE_PING discovery protocol in cloud environments
+
+## Build and Project Configuration
+
+- [pom.xml](pom.xml): Parent POM defining module structure (common, testsuite, wildfly-bootable-cloud-configurator, wildfly-cloud-galleon-pack, wildfly-preview-cloud-galleon-pack), dependency versions, and release profiles
+- [release_process.adoc](release_process.adoc): Step-by-step release process for the cloud Galleon pack
+
+## Tests
+
+- [testsuite/basic/src/test/java/org/wildfly/cloud/test/SimpleTestCase.java](testsuite/basic/src/test/java/org/wildfly/cloud/test/SimpleTestCase.java): Basic integration test for the cloud feature pack
+- [s2i-tests/test-apps/helloworld/](s2i-tests/test-apps/helloworld/): S2I test application for validating cloud image builds
+
+## CI/CD
+
+- [.github/workflows/ci.yml](.github/workflows/ci.yml): Main CI workflow
+- [.github/workflows/snapshot-ci.yml](.github/workflows/snapshot-ci.yml): Snapshot CI workflow
+- [.github/workflows/test-wildfly-s2i.yml](.github/workflows/test-wildfly-s2i.yml): WildFly S2I image integration tests
+- [.github/workflows/test-openjdk-s2i.yml](.github/workflows/test-openjdk-s2i.yml): OpenJDK S2I image integration tests
