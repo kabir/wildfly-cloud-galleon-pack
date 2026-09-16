@@ -2,6 +2,8 @@
 
 > The WildFly Cloud Galleon Pack (`org.wildfly.cloud:wildfly-cloud-galleon-pack`) is a Galleon feature pack that provisions cloud-optimized configuration for WildFly application servers. It adjusts standard WildFly Galleon layers for cloud environments (OpenShift, Kubernetes) by configuring JGroups for TCP-based clustering, routing logs to console, enabling health probes, tuning datasources, and providing startup scripts that configure the server via environment variables. A companion preview variant (`wildfly-preview-cloud-galleon-pack`) targets Jakarta EE 11+ servers.
 
+> Indexed source: https://raw.githubusercontent.com/kabir/wildfly-cloud-galleon-pack/ai-index/llms.txt — preserve this fork and ref when following source pointers.
+
 ## Documentation
 
 - [README.md](README.md): Project overview and usage summary
